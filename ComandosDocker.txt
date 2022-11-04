@@ -199,9 +199,20 @@ https://hub.docker.com/_/bonita
 $ docker run --name mydbmysql -v "$PWD"/custom_mysql/:/etc/mysql/conf.d -e MYSQL_ROOT_PASSWORD=mysecretpassword -d mysql:8.0
 
 
+--------------------------------------------
+
+#MySQL - DIO.me - Primeiros Passos com o Docker - Criando um container do MySQL
+
+docker pull mysql
+
+#executando o docker com banco de dados
+docker run -e MYSQL_ROOT_PASSWORD=40917670 --name mysql-A -d -p 3306:3306 mysql
 
 
+#executando 
+docker exec -it mysql-A bash
 
-
+#verificar o protocolo que é utilizado quando executa o comando docker ps (após a porta)
+mysql -u root -p --protocol=tcp
 
 
