@@ -216,3 +216,5 @@ docker exec -it mysql-A bash
 mysql -u root -p --protocol=tcp
 
 
+#verificando informações como ip e porta
+docker inspect
