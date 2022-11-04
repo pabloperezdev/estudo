@@ -1,0 +1,207 @@
+CKER
+
+
+#Removendo versões antigas do docker
+sudo yum remove docker \
+                  docker-client \
+                  docker-client-latest \
+                  docker-common \
+                  docker-latest \
+                  docker-latest-logrotate \
+                  docker-logrotate \
+                  docker-engine
+
+#Instalando repositório
+sudo yum install -y yum-utils
+sudo yum-config-manager \
+    --add-repo \
+    https://download.docker.com/linux/centos/docker-ce.repo
+	
+	 
+#Instalando Docker Engine containerd
+sudo yum install docker-ce docker-ce-cli containerd.io
+
+#Iniciando docker
+sudo systemctl start docker
+
+#instalando docker compose
+sudo curl -L https://github.com/docker/compose/releases/download/1.15.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+
+#permissão de execução para o docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+
+#Lista todos os containers que estão executados no momento
+docker ps
+
+#ssh bash no docker
+docker exec -it <container name> /bin/bash
+
+#Lista todos os containers 
+docker ps -a
+
+#Baixa a imagem 
+docker pull <IMAGEM>
+
+#Baixa e executa a imagem 
+docker pull run <IMAGEM>
+
+#Atrelar o terminal com o docker
+docker run -it <IMAGE>
+
+#executando docker ####################################################################################
+docker run -it -d -p 8080:8080 <IMAGE>
+docker run -it -d -p 8080:8080 pabloperez1987/ubuntu:v1
+docker exec <CONTAINER ID> /pentaho-server/start-pentaho.sh
+
+#saindo do docker e encerrando a sessão
+CTRL+D ou exit
+
+#iniciando o docker
+docker start <CONTAINER ID>
+
+#Parando o docker
+docker stop <CONTAINER ID>
+
+#ligando o container, atachando com o container correto
+docker start -a -i <CONTAINER ID>
+
+#ligando o container, atachando com o container correto e saindo
+#usados para aplicações que prende a sessão do terminal para ficar executando (background)
+docker start -d <CONTAINER ID>
+
+#ligando o container, atachando com o container correto e saindo
+#usados para aplicações que prende a sessão do terminal para ficar executando (background)
+#P pega uma porta aleatória e direciona para o container permitindo que o host converse com o docker
+docker start -d -P <CONTAINER ID>
+
+#ligando o container, atachando com o container correto e saindo
+#usados para aplicações que prende a sessão do terminal para ficar executando (background)
+#p pega uma porta especifica e direciona para o container permitindo que o host converse com o docker
+docker start -d -p 123456:80 <CONTAINER ID>
+
+#ligando o container, atachando com o container correto e saindo
+#usados para aplicações que prende a sessão do terminal para ficar executando (background)
+#P pega uma porta aleatória e direciona para o container permitindo que o host converse com o docker
+#adiciona um nome 
+docker start -d -P --name <nome> <CONTAINER ID>
+
+#consultar a porta que está sendo usada pelo docker
+docker port <CONTAINER ID>
+
+#remover docker
+docker rm <CONTAINER ID>
+
+#remover todos os containers inativos
+docker container prune
+
+#exibe imagens do docker
+docker images
+
+#remover imagens do docker
+docker rmi <REPOSITORY>
+
+
+#Encontrando a porta que está em uso, identificar o pid e kill
+sudo ss -lptn 'sport = :5432'
+
+
+######################################################################
+
+#Persistindo os dados no container (volume)
+#aponto para a pasta do host
+docker run -v "/var/www" 
+
+
+#inspecionando as informações
+#verificar o "Mounts"
+docker inspect <CONTAINER ID>
+
+#criando um volume que faça referência à pasta do código no nosso Desktop
+#executa o container para compilar o código na linguagem de programação
+#vai dar erro
+docker run -p 8080:3000 -v "C:\Users\Alura\Desktop\volume-exemplo:/var/www" node npm start (informar a linguagem)
+
+#Então devemos especificar que o comando npm start deve ser executado dentro da pasta /var/www. Para isso, vamos passar a flag -w (Working Directory), para dizer em qual diretório o comando deve ser executado, a pasta /var/www:
+docker run -p 8080:3000 -v "C:\Users\Alura\Desktop\volume-exemplo:/var/www" -w "/var/www" node npm start
+
+######################################################################
+#####CRIANDO PRÓPRIA IMAGEM
+
+#logar no docker para enviar imagem
+docker login
+
+
+#Após criar a imagem, executar o comando abaixo para commitar o que ja foi feito 
+#https://www.mirantis.com/blog/how-do-i-create-a-new-docker-image-for-my-application/
+#docker commit -m "Message" -a "Author Name" [containername] [username]/[imagename]
+docker commit -m "pentaho server 8.2" -a "Pablo Perez" pentaho_server pabloperez1987/ubuntu:v1 #inserido v1 como versão 1
+
+#Enviando a imagem 
+docker push <NOME DA IMAGEM QUE QUER SUBIR>
+docker push pabloperez1987/ubuntu:v1
+
+#baixar e executar 
+docker run --name pentaho_server -p 8080:8080 pabloperez1987/ubuntu:v1
+
+
+######################################################################
+#################### COMUNICAÇÃO ENTRE CONTAINERS
+
+#docker precisa de uma rede interna para fazer a comunicação entre os containers
+#pega ip 172.17.0.0 e 
+docker network create --driver bridge minha-rede
+
+#listar as redes dockers
+docker network ls
+
+#quando criamos um container, ao invés de deixarmos ele ser associado à rede padrão do Docker, atrelamos à rede que acabamos de criar, através da flag --network. Vamos aproveitar e nomear o container:
+docker run -it --name meu-container-de-ubuntu --network minha-rede ubuntu
+
+#Checando as máquinas que estão na rede 
+docker network inspect <nome da rede>
+
+######################################################################
+#################### DOCKER COMPOSE
+
+#Diz através de arquivo .yml a ordem que deve subir os containers
+
+#quando necessário, deve ser feito a build antes.
+sudo docker-compose build
+
+#Depois de buildar o comando abaixo starta os containers na ordem configurada
+sudo docker-compose up
+
+#Stopando os containers e após isso, os containers são removidos
+sudo docker-compose up
+
+#lista os containers em execução carregados pelo compose
+docker-compose ls 
+
+
+
+
+
+
+#funcionando, falta ajustes
+docker run --detach --name=contabo-mysql --env="MYSQL_ROOT_PASSWORD=Acd5gNbRasV2eBk" --env="MYSQL_DATABASE=glpi" --env="MYSQL_USER=glpi" --env="MYSQL_PASSWORD=dP*$tQYrC-8U&" -v "/var/lib/mysql:/var/lib/mysql" -v "/etc/my.cnf.d:/etc/my.cnf.d"  --network minha-rede --publish 3307:3306 mysql:5.7.23
+
+# Entrando no docker 
+docker exec -it contabo-mysql bash -l
+
+
+
+docker run --name glpi --link contabo-mysql:mysql --volume /var/www/html/glpi:/var/www/html/glpi --network minha-rede -p 8080:80 -d diouxx/glpi
+
+#bonita
+https://hub.docker.com/_/bonita
+
+#Mount that directory location as /etc/mysql/conf.d inside the MySQL container:
+$ docker run --name mydbmysql -v "$PWD"/custom_mysql/:/etc/mysql/conf.d -e MYSQL_ROOT_PASSWORD=mysecretpassword -d mysql:8.0
+
+
+
+
+
+
+
+
