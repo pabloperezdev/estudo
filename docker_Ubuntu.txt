@@ -1,0 +1,38 @@
+#https://docs.docker.com/engine/install/ubuntu/
+
+ curl -fsSL https://test.docker.com -o test-docker.sh
+ sudo sh test-docker.sh
+ 
+ # Imagem do mysql com volume
+ 
+ docker run -e MYSQL_ROOT_PASSWORD=40917670 --name mysql-A -d -p 3306:3306 mysql
+
+#Inserindo um volume fora do container caso destrua o container, as informações mão são excluídas.
+docker run -e MYSQL_ROOT_PASSWORD=40917670 --name mysql-A -d -p 3306:3306 --volume=/data/mysql-A:/var/lib/mysql mysql
+
+#tipos de mount - docker recomenda usar o volume (named) pois os volumes sao criados e gerenciados pelo docker 
+	#bind 
+	docker run -e MYSQL_ROOT_PASSWORD=40917670 --name mysql-A -d -p 3306:3306 --volume=/data/mysql-A:/var/lib/mysql mysql
+	
+		#usando bind, informando a origem (src), o destino no container (/data) e a imagem (debian)
+		docker run -dti --mount type=bind,src=/data/debian-A,dst=/data debian
+		
+		#permissao apenas de leitura
+		docker run -dti --mount type=bind,src=/data/debian-A,dst=/data,ro debian
+	
+	#named/volume - cria com o comando docker volume create <nome-do-volume>, armazenado em /var/lib/docker
+	docker run -v mysql_data:/var/lib/mysql mysql
+	
+		#docker volume ls - lista os volumes na pasta padrao do docker
+		docker volume ls
+		
+		#1º - docker volume create - cria um volume 
+		docker volume create data-debian
+		
+		##ls -l /var/lib/docker/volumes/ - local onde estao armazenados os volumes que o proprio docker cria
+		
+		#usando volume
+		docker run -dti --name debiaA --mount type=volume,src=data-debian,dst=/data debian
+		
+		# removendo o volume
+		docker volume rm data-debian
