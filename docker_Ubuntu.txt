@@ -36,3 +36,14 @@ docker run -e MYSQL_ROOT_PASSWORD=40917670 --name mysql-A -d -p 3306:3306 --volu
 		
 		# removendo o volume
 		docker volume rm data-debian
+# para saber se está sendo utilizado um volume ou bind, usar o docker inspect, estará no 'Mounts'
+docker inspect <nome-do-container>
+
+# excluindo o docker sem precisar parar caso esteja em execução - docker rm -f <nome-do-container>
+docker rm -f centos-A
+
+#limpa todos os volume - cuidado ao utilizar
+docker volume prune
+
+#limpa todos os containers mas mantem as imagens - cuidado ao utilizar
+ docker container prune
