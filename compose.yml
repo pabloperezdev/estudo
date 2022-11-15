@@ -1,0 +1,12 @@
+# DockerCompose_ContainerApacheComAppHTML.yml
+# https://web.dio.me/lab/criando-um-container-de-uma-aplicacao-web/learning/ab0654f1-b0fe-4cc6-8632-533d07887bac
+
+version: '3.9'
+services:
+  apache:
+    image: httpd:latest
+    container_name: my-apache-app
+    ports:
+    - '80:80'
+    volumes:
+    - ./website:/usr/local/apache2/htdocs
